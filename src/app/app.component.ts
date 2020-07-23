@@ -11,9 +11,9 @@ import {Point} from './point';
 export class AppComponent {
     title = 'graphs';
     grid: any = [];
-    len: any = 40;
+    len: any = 15;
     min: any = 10;
-    max: any = 60;
+    max: any = 43;
     obstacles: any = 0;
     algoTypes: any = [
       { value: ALGO_TYPES.BFS, label: 'BFS', algo: this.traversal, args: true },

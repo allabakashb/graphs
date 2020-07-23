@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ALGO_TYPES, CLASSES, NEIGHBORS, OBJ_TYPE} from './constants';
 import {PriorityQueue} from './priority.queue';
 import {Point} from './point';
+import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -9,68 +12,71 @@ import {Point} from './point';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-    title = 'graphs';
-    grid: any = [];
-    len: any = 15;
-    min: any = 10;
-    max: any = 43;
-    obstacles: any = 0;
-    algoTypes: any = [
-      { value: ALGO_TYPES.BFS, label: 'BFS', algo: this.traversal, args: true },
-      { value: ALGO_TYPES.DFS, label: 'DFS', algo: this.traversal, args: false },
-      { value: ALGO_TYPES.DIJ, label: 'Dijkstra', algo: this.dijkstra, args: null },
-      { value: ALGO_TYPES.ASTAR, label: 'Astar', algo: this.astar, args: null }
-    ];
-    algoType: any = this.algoTypes[0];
-    source: any;
-    dest: any;
-    searchSource: any = false;
-    searchDest: any = false;
-    visitedCount: any = 0;
-    pathCount: any = 0;
+  title = 'graphs';
+  grid: any = [];
+  len: any = 30;
+  obstacles: any = 0;
+  algoTypes: any = [
+    {value: ALGO_TYPES.BFS, label: 'BFS', algo: this.traversal, args: true},
+    {value: ALGO_TYPES.DFS, label: 'DFS', algo: this.traversal, args: false},
+    {value: ALGO_TYPES.DIJ, label: 'Dijkstra', algo: this.dijkstra, args: null},
+    {value: ALGO_TYPES.ASTAR, label: 'A*', algo: this.astar, args: null}
+  ];
+  algoType: any = this.algoTypes[0];
+  source: any;
+  dest: any;
+  searchSource: any = false;
+  searchDest: any = false;
+  visitedCount: any = 0;
+  pathCount: any = 0;
+  minObs: any = 0;
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+    .pipe(
+      map(result => result.matches)
+    );
 
-    constructor() {
+  constructor(private breakpointObserver: BreakpointObserver) {
+    this.isHandset$.subscribe(value => {
+      this.len = value ? 15 : 30;
+      this.obstacles = value ? 50 : 300;
+      this.minObs = value ? 50 : 100;
       this.createGrid();
-    }
+    });
+  }
 
   createGrid(): void {
-    if (this.len <= this.max && this.len >= this.min) {
-      this.visitedCount = 0;
-      this.pathCount = 0;
-      this.grid = new Array(this.len);
-      for (let i = 0; i < this.len; i++) {
-        this.grid[i] = new Array(this.len);
-        for (let j = 0; j < this.len; j++) {
-          this.grid[i][j] = new Point(i, j, Infinity);
-        }
+    this.visitedCount = 0;
+    this.pathCount = 0;
+    this.grid = new Array(this.len);
+    for (let i = 0; i < this.len; i++) {
+      this.grid[i] = new Array(this.len);
+      for (let j = 0; j < this.len; j++) {
+        this.grid[i][j] = new Point(i, j, Infinity);
       }
-      this.grid[0][0].v = OBJ_TYPE.SOURCE;
-      this.grid[0][0].class = CLASSES.s;
-      this.grid[0][0].c = 0;
-      this.grid[this.len - 1][this.len - 1].v = OBJ_TYPE.DEST;
-      this.grid[this.len - 1][this.len - 1].class = CLASSES.d;
-      this.source = this.grid[0][0];
-      this.dest = this.grid[this.len - 1][this.len - 1];
     }
+    this.grid[0][0].v = OBJ_TYPE.SOURCE;
+    this.grid[0][0].class = CLASSES.s;
+    this.grid[0][0].c = 0;
+    this.grid[this.len - 1][this.len - 1].v = OBJ_TYPE.DEST;
+    this.grid[this.len - 1][this.len - 1].class = CLASSES.d;
+    this.source = this.grid[0][0];
+    this.dest = this.grid[this.len - 1][this.len - 1];
   }
 
   fillObstacles(): void {
-      if (this.obstacles <= 0) {
-        return;
-      }
-      let obs = this.obstacles;
-      this.resetObstacles();
-      while (obs > 0) {
+    let obs = Math.floor(Math.random() * this.obstacles) + this.minObs;
+    this.resetObstacles();
+    while (obs > 0) {
 
-        const row = Math.floor(Math.random() * this.len);
-        const col = Math.floor(Math.random() * this.len);
+      const row = Math.floor(Math.random() * this.len);
+      const col = Math.floor(Math.random() * this.len);
 
-        if (![CLASSES.s, CLASSES.d, CLASSES.x].includes(this.grid[row][col].class)) {
-            this.grid[row][col].class = CLASSES.x;
-            this.grid[row][col].v = OBJ_TYPE.OBSTACLE;
-            --obs;
-        }
+      if (![CLASSES.s, CLASSES.d, CLASSES.x].includes(this.grid[row][col].class)) {
+        this.grid[row][col].class = CLASSES.x;
+        this.grid[row][col].v = OBJ_TYPE.OBSTACLE;
+        --obs;
       }
+    }
   }
 
   resetObstacles(): void {
@@ -113,16 +119,16 @@ export class AppComponent {
   }
 
   resetClasses(): any {
-      for (let i = 0; i < this.len; i++) {
-        for (let j = 0; j < this.len; j++) {
-          if ([CLASSES.v, CLASSES.p].includes(this.grid[i][j].class)) {
-            this.grid[i][j].class = '';
-          }
-          this.grid[i][j].c = Infinity;
-          this.grid[i][j].gscore = Infinity;
-          this.grid[i][j].fscore = Infinity;
+    for (let i = 0; i < this.len; i++) {
+      for (let j = 0; j < this.len; j++) {
+        if ([CLASSES.v, CLASSES.p].includes(this.grid[i][j].class)) {
+          this.grid[i][j].class = '';
         }
+        this.grid[i][j].c = Infinity;
+        this.grid[i][j].gscore = Infinity;
+        this.grid[i][j].fscore = Infinity;
       }
+    }
   }
 
   astar(parent, visited, paths): any {
@@ -189,23 +195,23 @@ export class AppComponent {
     const queue = [parent.source];
     while (queue.length !== 0) {
 
-        const point: Point = isBfs ? queue.shift() : queue.pop();
+      const point: Point = isBfs ? queue.shift() : queue.pop();
 
-        if (point.v === OBJ_TYPE.DEST) {
-          break;
-        }
+      if (point.v === OBJ_TYPE.DEST) {
+        break;
+      }
 
-        parent.paint(point, CLASSES.v, parent);
-        for (const nbr of NEIGHBORS) {
-          const nx = nbr[0] + point.x;
-          const ny = nbr[1] + point.y;
-          if (parent.isInValid(nx, ny, parent, visited)) {
-            continue;
-          }
-          visited.add(parent.grid[nx][ny]);
-          paths.set(parent.grid[nx][ny], point);
-          queue.push(parent.grid[nx][ny]);
+      parent.paint(point, CLASSES.v, parent);
+      for (const nbr of NEIGHBORS) {
+        const nx = nbr[0] + point.x;
+        const ny = nbr[1] + point.y;
+        if (parent.isInValid(nx, ny, parent, visited)) {
+          continue;
         }
+        visited.add(parent.grid[nx][ny]);
+        paths.set(parent.grid[nx][ny], point);
+        queue.push(parent.grid[nx][ny]);
+      }
     }
 
     parent.createPath(paths, parent);
@@ -237,7 +243,9 @@ export class AppComponent {
 
   private paint(point: Point, className: any, parent: any): void {
 
-    if (point.x === parent.source.x && point.y === parent.source.y) { return; }
+    if (point.x === parent.source.x && point.y === parent.source.y) {
+      return;
+    }
 
     setTimeout(() => {
       if (className === CLASSES.p) {
@@ -282,30 +290,30 @@ export class AppComponent {
   }
 
   fix(col: Point): void {
-      if (this.searchSource) {
-        this.resetSource();
-        this.source = col;
-        this.source.class = CLASSES.s;
-        this.source.c = 0;
-        this.source.gscore = 0;
-        this.source.fscore = 0;
-        this.source.v = OBJ_TYPE.SOURCE;
-      } else if (this.searchDest) {
-        this.resetDest();
-        this.dest = col;
-        this.dest.class = CLASSES.d;
-        this.dest.c = Infinity;
-        this.dest.gscore = Infinity;
-        this.dest.fscore = Infinity;
-        this.dest.v = OBJ_TYPE.DEST;
-      }
-      this.searchDest = false;
-      this.searchSource = false;
+    if (this.searchSource) {
+      this.resetSource();
+      this.source = col;
+      this.source.class = CLASSES.s;
+      this.source.c = 0;
+      this.source.gscore = 0;
+      this.source.fscore = 0;
+      this.source.v = OBJ_TYPE.SOURCE;
+    } else if (this.searchDest) {
+      this.resetDest();
+      this.dest = col;
+      this.dest.class = CLASSES.d;
+      this.dest.c = Infinity;
+      this.dest.gscore = Infinity;
+      this.dest.fscore = Infinity;
+      this.dest.v = OBJ_TYPE.DEST;
+    }
+    this.searchDest = false;
+    this.searchSource = false;
   }
 
   setSource(): void {
-      this.searchSource = true;
-      this.searchDest = false;
+    this.searchSource = true;
+    this.searchDest = false;
   }
 
   setDest(): void {
@@ -314,11 +322,11 @@ export class AppComponent {
   }
 
   resetSource(): void {
-      this.source.class = '';
-      this.source.c = Infinity;
-      this.source.gscore = Infinity;
-      this.source.fscore = Infinity;
-      this.source.v = '';
+    this.source.class = '';
+    this.source.c = Infinity;
+    this.source.gscore = Infinity;
+    this.source.fscore = Infinity;
+    this.source.v = '';
   }
 
   resetDest(): void {

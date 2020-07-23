@@ -1,6 +1,6 @@
 .box {
-  height: 14px;
-  width: 14px;
+  height: 16px;
+  width: 16px;
   border: 1px solid #eaeaea;
 }
 
@@ -57,4 +57,8 @@ span {
 .h-dest {
   background-color: #108830;
   border: 2px solid #525350;
+}
+
+h3 {
+  margin: 5px;
 }

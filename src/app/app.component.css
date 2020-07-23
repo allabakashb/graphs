@@ -1,0 +1,60 @@
+.box {
+  height: 14px;
+  width: 14px;
+  border: 1px solid #eaeaea;
+}
+
+.section {
+  border: 1px solid gray;
+  margin: 5px;
+  height: 100%;
+}
+
+.sub-section {
+  margin: 5px;
+}
+
+.red-bg {
+  background-color: red;
+}
+
+.source {
+  background-color: chartreuse;
+}
+
+.dest {
+  background-color: #108830;
+}
+
+.path {
+  background-color: #3f51b5;
+}
+
+.visited {
+  background-color: #91c0ef;
+}
+
+button {
+  height: 40px;
+}
+
+.divider {
+  border-bottom: 1px solid gray;
+  width: 100%;
+  margin: 10px;
+}
+
+span {
+  margin: 5px;
+  font-weight: bold;
+}
+
+.h-source {
+  background-color: chartreuse;
+  border: 2px solid #525350;
+}
+
+.h-dest {
+  background-color: #108830;
+  border: 2px solid #525350;
+}

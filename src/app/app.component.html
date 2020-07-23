@@ -1,0 +1,48 @@
+<div fxLayout="row" fxFlex="100" fxFlexFill>
+    <div fxLayout="column" fxFlex="50" fxLayoutAlign="center" class="section" fxFlexFill>
+      <div fxLayout="row wrap" fxFlex="100" class="sub-section">
+        <div *ngFor="let row of grid" fxLayout="row wrap" fxFlex="100">
+          <div fxLayout="row" class="box" [class]="col.class" *ngFor="let col of row"
+               (mouseover)="highlight(col)" (mouseleave)="removeHighlight(col)" (click)="fix(col)"></div>
+        </div>
+      </div>
+    </div>
+  <div fxLayout="column" fxFlex="50" class="section" fxFlexFill>
+    <div fxLayout="row wrap" fxFlex="100" class="sub-section">
+      <div fxFlex="100">
+        <mat-form-field fxFlex="45" fxFlexOffset="5">
+          <input placeholder="Size of the Maze" type="number" [min]="min" [max]="max" [(ngModel)]="len" (change)="createGrid()" matInput>
+        </mat-form-field>
+        <button fxFlex="20" fxFlexOffset="5" (click)="createGrid()" color="primary" mat-raised-button>Reset Maze</button>
+      </div>
+      <div class="divider"></div>
+      <div fxFlex="100" fxLayout="row">
+        <mat-form-field fxFlexOffset="5">
+          <input placeholder="obstacles" type="number" min="0" max="{{len * len}}" [(ngModel)]="obstacles" matInput>
+        </mat-form-field>
+        <button fxFlex="20" fxFlexOffset="5" (click)="fillObstacles()" color="primary" mat-raised-button>Fill Obstacles</button>
+      </div>
+      <div class="divider"></div>
+      <div fxFlex="100" fxLayout="row wrap">
+        <span fxFlex="100">Select Source and Destination</span>
+        <div fxFlex="100" fxLayout="row">
+          <button fxFlex="20" fxFlexOffset="5" (click)="setSource()" color="primary" mat-raised-button>Source</button>
+          <button fxFlex="20" fxFlexOffset="5" (click)="setDest()" color="primary" mat-raised-button>Destination</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div fxFlex="100" fxLayout="row wrap">
+        <span fxFlex="100">Select Algorithm</span>
+        <mat-select fxFlex="45" fxFlexOffset="5" [(ngModel)]="algoType">
+          <mat-option *ngFor="let algo of algoTypes" [value]="algo">{{algo.label}}</mat-option>
+        </mat-select>
+        <button fxFlex="20" fxFlexOffset="5" (click)="go()" color="primary" mat-raised-button>Go</button>
+      </div>
+      <div class="divider"></div>
+      <div fxFlex="100" fxLayout="row wrap">
+        <div fxFlex="50"><b>Visited Nodes ::</b> {{visitedCount}}</div>
+        <div fxFlex="50"><b>Path Nodes ::</b> {{pathCount}}</div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,6 @@
-# Graphs
+# Graphs Path Finding Visualizer
+
+For Live Demo, checkout https://allabakashb.github.io/graphs/ and have fun with graph traversal's visualization
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.3.
 

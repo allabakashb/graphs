@@ -1,4 +1,10 @@
-.box {
+.row-sm .box {
+  height: 15px;
+  width: 15px;
+  border: 1px solid #eaeaea;
+}
+
+.row-lg .box {
   height: 16px;
   width: 16px;
   border: 1px solid #eaeaea;
@@ -15,15 +21,18 @@
 }
 
 .red-bg {
-  background-color: red;
+  background-color: #e23b69;
+  color: #ffffff;
 }
 
 .source {
-  background-color: chartreuse;
+  background-color: #335f08;
+  color: #ffffff;
 }
 
 .dest {
-  background-color: #108830;
+  background-color: #dca032;
+  color: #ffffff;
 }
 
 .path {
@@ -50,15 +59,28 @@ span {
 }
 
 .h-source {
-  background-color: chartreuse;
+  background-color: #335f08;
   border: 2px solid #525350;
 }
 
 .h-dest {
-  background-color: #108830;
+  background-color: #dca032;
   border: 2px solid #525350;
 }
 
 h3 {
   margin: 5px;
+}
+
+.count {
+  margin-top: 5px;
+}
+
+.h-red-bg {
+  background-color: #e23b69;
+  border: 3px solid #525350;
+}
+
+.mr-10 {
+  margin: 10px;
 }

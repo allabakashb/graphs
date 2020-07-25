@@ -14,7 +14,8 @@ import {map} from 'rxjs/operators';
 export class AppComponent {
   title = 'graphs';
   grid: any = [];
-  len: any = 30;
+  rows: any = 0;
+  cols: any = 0;
   obstacles: any = 0;
   algoTypes: any = [
     {value: ALGO_TYPES.BFS, label: 'BFS', algo: this.traversal, args: true},
@@ -27,9 +28,12 @@ export class AppComponent {
   dest: any;
   searchSource: any = false;
   searchDest: any = false;
+  searchObs: any = false;
   visitedCount: any = 0;
   pathCount: any = 0;
   minObs: any = 0;
+  rowClass: any = '';
+  algoClass: any = '';
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches)
@@ -37,30 +41,36 @@ export class AppComponent {
 
   constructor(private breakpointObserver: BreakpointObserver) {
     this.isHandset$.subscribe(value => {
-      this.len = value ? 15 : 30;
+      this.rows = value ? 15 : 25;
+      this.cols = value ? 15 : 60;
       this.obstacles = value ? 50 : 300;
       this.minObs = value ? 50 : 100;
+      this.rowClass = value ? 'row-sm' : 'row-lg';
+      this.algoClass = value ? CLASSES.mr : '';
       this.createGrid();
     });
   }
 
   createGrid(): void {
+    this.searchObs = false;
+    this.searchSource = false;
+    this.searchDest = false;
     this.visitedCount = 0;
     this.pathCount = 0;
-    this.grid = new Array(this.len);
-    for (let i = 0; i < this.len; i++) {
-      this.grid[i] = new Array(this.len);
-      for (let j = 0; j < this.len; j++) {
+    this.grid = new Array(this.rows);
+    for (let i = 0; i < this.rows; i++) {
+      this.grid[i] = new Array(this.cols);
+      for (let j = 0; j < this.cols; j++) {
         this.grid[i][j] = new Point(i, j, Infinity);
       }
     }
     this.grid[0][0].v = OBJ_TYPE.SOURCE;
     this.grid[0][0].class = CLASSES.s;
     this.grid[0][0].c = 0;
-    this.grid[this.len - 1][this.len - 1].v = OBJ_TYPE.DEST;
-    this.grid[this.len - 1][this.len - 1].class = CLASSES.d;
+    this.grid[this.rows - 1][this.cols - 1].v = OBJ_TYPE.DEST;
+    this.grid[this.rows - 1][this.cols - 1].class = CLASSES.d;
     this.source = this.grid[0][0];
-    this.dest = this.grid[this.len - 1][this.len - 1];
+    this.dest = this.grid[this.rows - 1][this.cols - 1];
   }
 
   fillObstacles(): void {
@@ -68,8 +78,8 @@ export class AppComponent {
     this.resetObstacles();
     while (obs > 0) {
 
-      const row = Math.floor(Math.random() * this.len);
-      const col = Math.floor(Math.random() * this.len);
+      const row = Math.floor(Math.random() * this.rows);
+      const col = Math.floor(Math.random() * this.cols);
 
       if (![CLASSES.s, CLASSES.d, CLASSES.x].includes(this.grid[row][col].class)) {
         this.grid[row][col].class = CLASSES.x;
@@ -80,10 +90,13 @@ export class AppComponent {
   }
 
   resetObstacles(): void {
+    this.searchObs = false;
+    this.searchSource = false;
+    this.searchDest = false;
     this.visitedCount = 0;
     this.pathCount = 0;
-    for (let i = 0; i < this.len; i++) {
-      for (let j = 0; j < this.len; j++) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
         if (![OBJ_TYPE.DEST, OBJ_TYPE.SOURCE].includes(this.grid[i][j].v)) {
           this.grid[i][j].v = '';
           this.grid[i][j].class = '';
@@ -92,17 +105,15 @@ export class AppComponent {
     }
   }
 
-  getClassName(col: Point): any {
-
-    return CLASSES[col.v] ? CLASSES[col.v] : '';
-  }
-
   go(): any {
+    this.searchObs = false;
+    this.searchSource = false;
+    this.searchDest = false;
     this.resetClasses();
     this.visitedCount = 0;
     this.pathCount = 0;
     this.source = this.source ? this.source : this.grid[0][0];
-    this.dest = this.dest ? this.dest : this.grid[this.len - 1][this.len - 1];
+    this.dest = this.dest ? this.dest : this.grid[this.rows - 1][this.cols - 1];
 
     this.source.class = CLASSES.s;
     this.source.v = OBJ_TYPE.SOURCE;
@@ -119,8 +130,8 @@ export class AppComponent {
   }
 
   resetClasses(): any {
-    for (let i = 0; i < this.len; i++) {
-      for (let j = 0; j < this.len; j++) {
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
         if ([CLASSES.v, CLASSES.p].includes(this.grid[i][j].class)) {
           this.grid[i][j].class = '';
         }
@@ -259,7 +270,7 @@ export class AppComponent {
   }
 
   private isInValid(x: any, y: any, parent: any, visited: Set<Point>): boolean {
-    return x >= parent.len || y >= parent.len || x < 0 || y < 0 ||
+    return x >= parent.rows || y >= parent.cols || x < 0 || y < 0 ||
       visited.has(parent.grid[x][y]) || parent.grid[x][y].v === OBJ_TYPE.OBSTACLE;
   }
 
@@ -268,7 +279,10 @@ export class AppComponent {
   }
 
   highlight(col: Point): any {
-    if (col.v === OBJ_TYPE.OBSTACLE) {
+    if (this.searchObs && !col.v) {
+      col.class = CLASSES.hx;
+      return;
+    } else if (col.v === OBJ_TYPE.OBSTACLE) {
       return;
     }
     if (this.searchSource) {
@@ -279,7 +293,10 @@ export class AppComponent {
   }
 
   removeHighlight(col: Point): void {
-    if (col.v === OBJ_TYPE.OBSTACLE) {
+    if (this.searchObs && !col.v) {
+      col.class = '';
+      return;
+    } else if (col.v === OBJ_TYPE.OBSTACLE) {
       return;
     }
     if (this.searchSource) {
@@ -306,6 +323,14 @@ export class AppComponent {
       this.dest.gscore = Infinity;
       this.dest.fscore = Infinity;
       this.dest.v = OBJ_TYPE.DEST;
+    } else if (this.searchObs) {
+        if (col.v === OBJ_TYPE.OBSTACLE) {
+          col.v = '';
+          col.class = '';
+        } else if (!col.v) {
+          col.v = OBJ_TYPE.OBSTACLE;
+          col.class = CLASSES.x;
+        }
     }
     this.searchDest = false;
     this.searchSource = false;
@@ -314,11 +339,19 @@ export class AppComponent {
   setSource(): void {
     this.searchSource = true;
     this.searchDest = false;
+    this.searchObs = false;
   }
 
   setDest(): void {
     this.searchDest = true;
     this.searchSource = false;
+    this.searchObs = false;
+  }
+
+  setObstacle(): void {
+    this.searchObs = !this.searchObs;
+    this.searchSource = false;
+    this.searchDest = false;
   }
 
   resetSource(): void {

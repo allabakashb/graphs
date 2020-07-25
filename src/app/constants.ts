@@ -5,7 +5,9 @@ export const CLASSES = {
   v: 'visited',
   p: 'path',
   hs: 'h-source',
-  hd: 'h-dest'
+  hd: 'h-dest',
+  hx: 'h-red-bg',
+  mr: 'mr-10'
 };
 
 export const ALGO_TYPES = {

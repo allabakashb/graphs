@@ -41,8 +41,8 @@ export class AppComponent {
 
   constructor(private breakpointObserver: BreakpointObserver) {
     this.isHandset$.subscribe(value => {
-      this.rows = value ? 15 : 25;
-      this.cols = value ? 15 : 60;
+      this.rows = value ? 15 : 30;
+      this.cols = value ? 20 : 50;
       this.obstacles = value ? 50 : 300;
       this.minObs = value ? 50 : 100;
       this.rowClass = value ? 'row-sm' : 'row-lg';
@@ -266,7 +266,7 @@ export class AppComponent {
         ++parent.visitedCount;
       }
       point.class = className;
-    }, 200);
+    }, 100);
   }
 
   private isInValid(x: any, y: any, parent: any, visited: Set<Point>): boolean {
@@ -337,13 +337,13 @@ export class AppComponent {
   }
 
   setSource(): void {
-    this.searchSource = true;
+    this.searchSource = !this.searchSource;
     this.searchDest = false;
     this.searchObs = false;
   }
 
   setDest(): void {
-    this.searchDest = true;
+    this.searchDest = !this.searchDest;
     this.searchSource = false;
     this.searchObs = false;
   }

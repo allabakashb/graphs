@@ -8,20 +8,22 @@ import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSelectModule} from '@angular/material/select';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FlexLayoutModule,
-    MatInputModule,
-    FormsModule,
-    MatButtonModule,
-    MatSelectModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        FlexLayoutModule,
+        MatInputModule,
+        FormsModule,
+        MatButtonModule,
+        MatSelectModule,
+        MatGridListModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

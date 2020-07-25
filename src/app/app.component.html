@@ -1,32 +1,29 @@
 <div fxLayout="row wrap" fxLayout.xs="column" fxFlex="100" fxFlexFill>
-  <div fxFlex="100" fxLayout="row" fxLayoutAlign="center">
-    <h3 fxFlex="50" fxLayoutAlign="end">Graph Path Finding Visualizer</h3>
-    <div class="count" fxFlex="40" fxFlexOffset="10" *ngIf="!(isHandset$ | async)">
-      <div fxFlex="40"><b>Visited Nodes ::</b> {{visitedCount}}</div>
-      <div fxFlex="30"><b>Path Nodes ::</b> {{pathCount}}</div>
-    </div>
-  </div>
+  <h3 fxFlex="100" fxLayoutAlign="center">Graph Path Finding Visualizer</h3>
   <div fxLayout="row wrap" fxLayout.xs="column" fxFlex="100" fxFlexFill>
-    <div fxLayout="row" fxFlex="100" fxFlex.xs="100" class="section">
-      <div fxLayout="row wrap" fxFlex="100" class="sub-section" fxLayoutAlign="center">
-        <div *ngFor="let row of grid" fxFlex="80" fxLayout="row wrap" [class]="rowClass">
-          <div fxLayout="row" class="box" [class]="col.class" *ngFor="let col of row"
-               (mouseover)="highlight(col)" (mouseleave)="removeHighlight(col)" (click)="fix(col)"></div>
-        </div>
+    <div fxLayout="row wrap" fxFlex="70" fxFlex.xs="100" class="section">
+      <div *ngFor="let row of grid" fxFlex="100" fxLayout="row" [class]="rowClass">
+        <div fxLayout="column" class="box" [class]="col.class" *ngFor="let col of row"
+             (mouseover)="highlight(col)" (mouseleave)="removeHighlight(col)" (click)="fix(col)"></div>
       </div>
     </div>
-    <div fxLayout="row" fxFlex="100" fxFlex.xs="100" class="section" fxFlexFill>
+    <div fxLayout="row wrap" fxFlex="20" fxFlex.xs="100" class="section" fxFlexFill>
       <div fxLayout="row wrap" fxLayout.xs="column" fxFlex="100" class="sub-section">
-        <div fxFlex="100" fxLayout="row wrap">
-          <span fxFlex="10" fxFlex.xs="60">Select</span>
-          <button fxFlex="25" fxFlex.xs="40" fxFlexOffset="1" (click)="setSource()" class="source" mat-raised-button>Source</button>
-          <button fxFlex="25" fxFlex.xs="40" fxFlexOffset="2" (click)="setDest()" class="dest" mat-raised-button>Destination</button>
-          <button fxFlex="20" fxFlex.xs="40" fxFlexOffset="2" (click)="setObstacle()" class="red-bg" [class]="algoClass" mat-raised-button>Obstacle{{searchObs ? '(Active)' : ''}}</button>
+        <div class="count" fxLayout="column" fxLayout.xs="row">
+          <div><b>Visited Nodes ::</b> {{visitedCount}}</div>
+          <div fxFlexOffset="5"><b>Path Nodes ::</b> {{pathCount}}</div>
         </div>
         <div class="divider"></div>
-        <div fxFlex="100" fxLayout="row wrap">
-          <button fxFlex="15" fxFlex.xs="40" fxFlexOffset="5" (click)="fillObstacles()" color="primary" mat-raised-button>Fill Obstacles</button>
-          <button fxFlex="15" fxFlex.xs="40" fxFlexOffset="5" (click)="createGrid()" color="primary" mat-raised-button>Reset Maze</button>
+        <div fxFlex="100" fxLayout.xs="row wrap" fxLayout="column">
+          <span fxFlex="10" fxFlex.xs="60">Select</span>
+          <button fxFlex="25" fxFlex.xs="40" fxFlexOffset="1" (click)="setSource()" class="source" mat-raised-button>Source{{searchSource ? '(Active)' : ''}}</button>
+          <button fxFlex="25" fxFlex.xs="40" fxFlexOffset="2" (click)="setDest()" class="dest" mat-raised-button>Destination{{searchDest ? '(Active)' : ''}}</button>
+          <button fxFlex="25" fxFlex.xs="40" fxFlexOffset="2" (click)="setObstacle()" class="red-bg" [class]="algoClass" mat-raised-button>Obstacle{{searchObs ? '(Active)' : ''}}</button>
+        </div>
+        <div class="divider"></div>
+        <div fxFlex="100" fxLayout.xs="row wrap" fxLayout="column">
+          <button fxFlex="30" fxFlex.xs="40" fxFlexOffset="5" (click)="fillObstacles()" color="primary" mat-raised-button>Fill Obstacles</button>
+          <button fxFlex="30" fxFlex.xs="40" fxFlexOffset="5" (click)="createGrid()" color="primary" mat-raised-button>Reset Maze</button>
           <div fxFlex="40" fxFlex.xs="60" fxFlexOffset="10" fxLayout="row wrap" [class]="algoClass">
             <mat-form-field fxFlex="60">
               <mat-label>Select Algorithm</mat-label>

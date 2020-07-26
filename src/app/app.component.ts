@@ -32,6 +32,7 @@ export class AppComponent {
   visitedCount: any = 0;
   pathCount: any = 0;
   minObs: any = 0;
+  obstacleCount: any = 0;
   rowClass: any = '';
   algoClass: any = '';
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
@@ -57,6 +58,7 @@ export class AppComponent {
     this.searchDest = false;
     this.visitedCount = 0;
     this.pathCount = 0;
+    this.obstacleCount = 0;
     this.grid = new Array(this.rows);
     for (let i = 0; i < this.rows; i++) {
       this.grid[i] = new Array(this.cols);
@@ -76,6 +78,7 @@ export class AppComponent {
   fillObstacles(): void {
     let obs = Math.floor(Math.random() * this.obstacles) + this.minObs;
     this.resetObstacles();
+    this.obstacleCount = obs;
     while (obs > 0) {
 
       const row = Math.floor(Math.random() * this.rows);
@@ -95,6 +98,7 @@ export class AppComponent {
     this.searchDest = false;
     this.visitedCount = 0;
     this.pathCount = 0;
+    this.obstacleCount = 0;
     for (let i = 0; i < this.rows; i++) {
       for (let j = 0; j < this.cols; j++) {
         if (![OBJ_TYPE.DEST, OBJ_TYPE.SOURCE].includes(this.grid[i][j].v)) {
@@ -327,9 +331,11 @@ export class AppComponent {
         if (col.v === OBJ_TYPE.OBSTACLE) {
           col.v = '';
           col.class = '';
+          --this.obstacleCount;
         } else if (!col.v) {
           col.v = OBJ_TYPE.OBSTACLE;
           col.class = CLASSES.x;
+          ++this.obstacleCount;
         }
     }
     this.searchDest = false;
